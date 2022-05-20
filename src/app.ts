@@ -1,4 +1,43 @@
+interface Validatable{
+    required: boolean
+}
 
+interface StringValidtable extends Validatable{
+    value: string;
+    maxLength?: number;
+    minLength?: number;
+}
+
+interface NumberValidtable extends Validatable{
+    value: number;
+    max?: number;
+    min?: number;
+}
+
+function validateValue(validator: StringValidtable | NumberValidtable){
+    let isValid = true;
+
+    if(validator.required){
+        isValid = isValid && validator.value.toString().length !== 0;
+    }
+
+    if('maxLength' in validator && validator.maxLength !== undefined){
+        isValid = isValid && validator.value.toString().length < validator.maxLength;
+    }
+
+    if('minLength' in validator && validator.minLength !== undefined){
+        isValid = isValid && validator.value.toString().length > validator.minLength;
+    }
+    
+    if('max' in validator && validator.max !== undefined){
+        isValid = isValid && validator.value < validator.max;
+    }
+
+    if('min' in validator && validator.min !== undefined){
+        isValid = isValid && validator.value > validator.min;
+    }
+    return isValid;
+}
 
 function autoBind(_: any, _2: string, descriptor: PropertyDescriptor){
     console.log(descriptor.value);
@@ -11,7 +50,6 @@ function autoBind(_: any, _2: string, descriptor: PropertyDescriptor){
         }
     }
 
-    console.log(adjustedDescriptor)
     return adjustedDescriptor;
 }
 class ProjectInput {
@@ -53,7 +91,55 @@ class ProjectInput {
     @autoBind
     private sumbitHandler(event: Event){
         event.preventDefault();
-        console.log(this.titleInput.value);
+        const userData = this.collectFormData();
+        if(Array.isArray(userData)){
+            const [title, desc, people] = userData;
+            console.log(title, desc, people)
+            this.clearAll();
+        }
+    }
+
+    private collectFormData():[string, string, number] | void{
+        const enteredTitle = this.titleInput.value;
+        const enteredDescription = this.descriptionInput.value;
+        const enteredPeople = +this.peopleInput.value;
+
+        const titleValidator : StringValidtable = {
+            required: true,
+            value: enteredTitle,
+            minLength: 3,
+            maxLength: 50
+        }
+
+        const descValidator : StringValidtable = {
+            required: true,
+            value: enteredDescription,
+            minLength: 10,
+            maxLength: 100
+        }
+
+        const peopleValidator : NumberValidtable = {
+            required: true,
+            value: enteredPeople,
+            min: 2,
+            max: 6
+        }
+
+        if(this.isFormValid([titleValidator, descValidator, peopleValidator])){
+            return [enteredTitle, enteredDescription, +enteredPeople];
+        }
+
+        alert("Form not valid")
+    }
+
+    private isFormValid(input: [StringValidtable, StringValidtable, NumberValidtable]): boolean{
+        return input.every(validator => validateValue(validator));
+    }
+
+    private clearAll(){
+        this.titleInput.value = '';
+        this.descriptionInput.value = '';
+        this.peopleInput.value = '';
     }
 }
 
