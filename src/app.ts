@@ -130,6 +130,29 @@ abstract class Component <T extends HTMLElement, U extends HTMLElement>{
     abstract renderContent(): void;
     abstract configure(): void;
 }
+
+class ProjectItem extends Component<HTMLUListElement, HTMLLIElement>{
+
+    get persons(){
+        if(this.project.people === 1) return '1 person';
+        return `${this.project.people} persons`
+    }
+
+    constructor(hostId: string,private project:Project){
+        super('single-project', hostId, false, project.id);
+        console.log(this.element)
+
+        this.configure();
+        this.renderContent();
+    }
+
+    renderContent(): void {
+        this.element.querySelector('h2')!.textContent = this.project.title;
+        this.element.querySelector('h3')!.textContent = this.persons + ' assgined';
+        this.element.querySelector('p')!.textContent = this.project.description;
+    }
+    configure():void {};
+}
 class ProjectList extends Component<HTMLDivElement, HTMLElement>{
 
     assignedProjects: Project[] = [];
@@ -138,26 +161,26 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement>{
         super('project-list', 'app', false, `${type}-projects`);
         this.element.id = `${this.type}-projects`;
 
-        this.renderContent();
         this.configure();
+        this.renderContent();
     }
 
     renderProjects() {
         const projectsList = this.element.querySelector(`#${this.type}-projects-list`)! as HTMLUListElement;
+        console.log(projectsList)
         projectsList.innerHTML = '';
         for(const project of this.assignedProjects){
-            const listItem = document.createElement('li');
-            listItem.textContent = project.title;
-            projectsList.appendChild(listItem);
+            console.log(projectsList.id)
+            new ProjectItem(projectsList.id, project);
         }
     }
-
+    
     renderContent(){
-        this.element.querySelector('ul')!.id = `${this.type}-projects-list`;
         this.element.querySelector('h2')!.textContent = this.type.toUpperCase() + ' Projects';
     }
-
+    
     configure() {
+        this.element.querySelector('ul')!.id = `${this.type}-projects-list`;
         projectState.addListener((projects: Project[]) => {
             const filteredProjects = projects.filter((project: Project) => {
                 if(this.type === 'active'){
@@ -226,7 +249,6 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
         const peopleValidator : NumberValidtable = {
             required: true,
             value: enteredPeople,
-            min: 2,
             max: 6
         }
 
