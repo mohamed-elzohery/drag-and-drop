@@ -40,7 +40,6 @@ function validateValue(validator: StringValidtable | NumberValidtable){
 }
 
 function autoBind(_: any, _2: string, descriptor: PropertyDescriptor){
-    console.log(descriptor.value);
     const originalMethod = descriptor.value;
     const adjustedDescriptor: PropertyDescriptor = {
         configurable: true,
@@ -51,6 +50,36 @@ function autoBind(_: any, _2: string, descriptor: PropertyDescriptor){
     }
 
     return adjustedDescriptor;
+}
+
+class ProjectList{
+    templateElement: HTMLTemplateElement;
+    hostElement: HTMLDivElement;
+    section: HTMLElement;
+
+    constructor(private type: 'active' | 'finished'){
+        this.templateElement = document.getElementById('project-list')! as HTMLTemplateElement;
+        this.hostElement = document.getElementById('app')! as HTMLDivElement;
+        this.section = this.importTemplateContent().firstElementChild as HTMLElement;
+        this.section.id = `${this.type}-projects`;
+        this.attachTemplateSection(this.section);
+        this.renderContent();
+    
+    }
+
+    private renderContent(){
+        this.section.querySelector('ul')!.id = `${this.type}-projects-list`;
+        this.section.querySelector('h2')!.textContent = this.type.toUpperCase() + ' Projects';
+    }
+
+    private importTemplateContent(){
+        const importedNode = document.importNode(this.templateElement, true);
+        return importedNode.content;
+    }
+
+    private attachTemplateSection(section: HTMLElement){
+        this.hostElement.insertAdjacentElement('beforeend', section);
+    }
 }
 class ProjectInput {
     templateElement: HTMLTemplateElement;
@@ -100,8 +129,8 @@ class ProjectInput {
     }
 
     private collectFormData():[string, string, number] | void{
-        const enteredTitle = this.titleInput.value;
-        const enteredDescription = this.descriptionInput.value;
+        const enteredTitle = this.titleInput.value.trim();
+        const enteredDescription = this.descriptionInput.value.trim();
         const enteredPeople = +this.peopleInput.value;
 
         const titleValidator : StringValidtable = {
@@ -144,3 +173,5 @@ class ProjectInput {
 }
 
 const projectInput = new ProjectInput();
+const activeList = new ProjectList('active');
+const finishedList = new ProjectList('finished');

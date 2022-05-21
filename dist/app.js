@@ -25,7 +25,6 @@ function validateValue(validator) {
     return isValid;
 }
 function autoBind(_, _2, descriptor) {
-    console.log(descriptor.value);
     var originalMethod = descriptor.value;
     var adjustedDescriptor = {
         configurable: true,
@@ -36,6 +35,29 @@ function autoBind(_, _2, descriptor) {
     };
     return adjustedDescriptor;
 }
+var ProjectList = /** @class */ (function () {
+    function ProjectList(type) {
+        this.type = type;
+        this.templateElement = document.getElementById('project-list');
+        this.hostElement = document.getElementById('app');
+        this.section = this.importTemplateContent().firstElementChild;
+        this.section.id = "".concat(this.type, "-projects");
+        this.attachTemplateSection(this.section);
+        this.renderContent();
+    }
+    ProjectList.prototype.renderContent = function () {
+        this.section.querySelector('ul').id = "".concat(this.type, "-projects-list");
+        this.section.querySelector('h2').textContent = this.type.toUpperCase() + ' Projects';
+    };
+    ProjectList.prototype.importTemplateContent = function () {
+        var importedNode = document.importNode(this.templateElement, true);
+        return importedNode.content;
+    };
+    ProjectList.prototype.attachTemplateSection = function (section) {
+        this.hostElement.insertAdjacentElement('beforeend', section);
+    };
+    return ProjectList;
+}());
 var ProjectInput = /** @class */ (function () {
     function ProjectInput() {
         this.templateElement = document.getElementById('project-input');
@@ -67,8 +89,8 @@ var ProjectInput = /** @class */ (function () {
         }
     };
     ProjectInput.prototype.collectFormData = function () {
-        var enteredTitle = this.titleInput.value;
-        var enteredDescription = this.descriptionInput.value;
+        var enteredTitle = this.titleInput.value.trim();
+        var enteredDescription = this.descriptionInput.value.trim();
         var enteredPeople = +this.peopleInput.value;
         var titleValidator = {
             required: true,
@@ -107,3 +129,5 @@ var ProjectInput = /** @class */ (function () {
     return ProjectInput;
 }());
 var projectInput = new ProjectInput();
+var activeList = new ProjectList('active');
+var finishedList = new ProjectList('finished');
