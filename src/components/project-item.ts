@@ -1,5 +1,7 @@
-
-namespace App {
+import { Component } from "./base.js";
+import { Project } from "../models/project.js";
+import { autoBind } from "../decorators/autobind.js";
+import { Draggable } from "../models/drag-drop.js";
     export class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> implements Draggable{
 
         get persons(){
@@ -35,4 +37,3 @@ namespace App {
             this.element.addEventListener('dragend', this.dragEndHandler);
         };
     }
-}

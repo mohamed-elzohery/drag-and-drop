@@ -1,4 +1,3 @@
-namespace App{
         
 // Types
 export enum ProjectStatus {ACTIVE, FINISHED};
@@ -12,5 +11,4 @@ export class Project{
     ){
         this.id = (Math.random() + Date.now()).toString();
     }
-}
 }

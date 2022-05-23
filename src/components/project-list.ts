@@ -1,4 +1,10 @@
-namespace App {
+   import { Component } from "./base.js"; 
+   import { Project } from "../models/project.js";
+   import { autoBind } from "../decorators/autobind.js";
+   import { DropTarget } from "../models/drag-drop.js";
+   import { projectState } from "../state/project.js";
+   import { ProjectItem } from "./project-item.js";
+   import { ProjectStatus } from "../models/project.js";
     export class ProjectList extends Component<HTMLDivElement, HTMLElement> implements DropTarget{
 
         assignedProjects: Project[] = [];
@@ -65,4 +71,3 @@ namespace App {
             })
         }
     }
-}

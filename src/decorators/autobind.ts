@@ -1,4 +1,3 @@
-namespace App{
     export function autoBind(_: any, _2: string, descriptor: PropertyDescriptor){
         const originalMethod = descriptor.value;
         const adjustedDescriptor: PropertyDescriptor = {
@@ -11,4 +10,3 @@ namespace App{
     
         return adjustedDescriptor;
     }
-}
